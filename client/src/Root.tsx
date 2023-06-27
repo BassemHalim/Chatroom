@@ -3,9 +3,11 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Chat from "./pages/Chat";
 import Index from "./pages/Index";
 import Register from "./components/Register";
+import Header from "./components/Header";
 function Root() {
   return (
-    <div className="h-full min-h-screen bg-gray-800">
+    <div className="h-full min-h-screen bg-gray-800 flex flex-col">
+      <Header/>
       <Router>
         <Routes>
           <Route index element={<Index />} />

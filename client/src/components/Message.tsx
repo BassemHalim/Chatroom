@@ -13,9 +13,9 @@ const Message = (props: MessageProps) => {
   return (
 
     <div
-      className={`${msgProps} w-fit max-w-sm rounded-3xl p-3 m-1 break-words flex flex-row`}
+      className={`${msgProps} w-fit max-w-md rounded-3xl p-3 m-1 flex flex-row`}
     >{msgType == 'received' &&  <Vote />}
-      <div>{text} </div>
+      <p className="max-w-sm break-words">{text} </p>
       {msgType == 'sent' &&  <Vote />}
     </div>
   );

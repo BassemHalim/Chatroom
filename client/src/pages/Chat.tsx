@@ -38,8 +38,8 @@ const Chat = () => {
     }
   }, [messages]);
   return (
-    <div className="flex flex-col min-h-screen h-full justify-between">
-      <Header />
+    <div className="flex flex-col flex-grow justify-between">
+      {/* <Header /> */}
       <div className="flex flex-col w-1/2 self-center place-self-center m-4 mb-auto">
         {messages &&
           messages.map((msg, index) => (
@@ -62,8 +62,8 @@ const Chat = () => {
           </button>
         </div>
       </form>
+      <div ref={scollToRef}></div>
     </div>
-    /* <div ref={scollToRef}></div> */
   );
 };
 
