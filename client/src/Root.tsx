@@ -3,10 +3,9 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Chat from "./pages/Chat";
 import Index from "./pages/Index";
 import Register from "./components/Register";
-
 function Root() {
   return (
-    <div className="h-full min-h-screen bg-gray-800 p-2">
+    <div className="h-full min-h-screen bg-gray-800">
       <Router>
         <Routes>
           <Route index element={<Index />} />

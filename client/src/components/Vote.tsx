@@ -11,7 +11,7 @@ export default function Vote() {
     setVote(vote - 1);
   };
   return (
-    <div className="flex flex-row">
+    <div className="flex flex-row mx-1">
       <button onClick={downvote}>
         <img src={downVoteIcon} className="" />
       </button>
