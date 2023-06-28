@@ -1,15 +1,17 @@
 package db
 
 import (
+	"parler/models"
+
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-	"parler/models"
 )
 
 var DB *gorm.DB
 
 func ConnectDatabase() {
-    dsn := "host=localhost user=postgres dbname=go_blog port=5432 sslmode=disable timezone="
+    // @TODO use .env
+    dsn := "host=localhost user=postgres password=postgres dbname=go_chat port=5432 sslmode=disable TimeZone=America/Los_Angeles"
     database, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})  
 
     if err != nil {
