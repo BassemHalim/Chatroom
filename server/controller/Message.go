@@ -4,8 +4,11 @@ import (
 	"net/http"
 	"parler/db"
 	"parler/models"
+	"parler/service"
 	"strconv"
 	"time"
+
+	token "parler/utils"
 
 	"github.com/gin-gonic/gin"
 )
@@ -18,17 +21,31 @@ type PostMessageRequest struct {
 
 func PostMessage(c *gin.Context) {
 	var request PostMessageRequest
+
 	if err := c.ShouldBindJSON(&request); err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	AuthorID := "1234" // TODO: get logged in user uuid
+
+	user_id, err := token.ExtractTokenID(c)
+	if err != nil {
+		c.Status(http.StatusInternalServerError)
+		return
+	}
+
+	user, err := service.GetUserByID(user_id)
+	if err != nil {
+		c.Status(http.StatusInternalServerError)
+		return
+	}
+
+	AuthorID := user.ID
 	message := models.Message{Content: request.Content,
-		AuthorID:  AuthorID,
+		UserID:    AuthorID,
 		Votes:     0,
 		CreatedAt: time.Now()}
 
-	db.DB.Create(&message) // TODO: remove after getting uuid
+	db.DB.Create(&message)
 	c.JSON(http.StatusOK, gin.H{"message": message})
 
 }
@@ -41,6 +58,7 @@ func GetMessages(c *gin.Context) {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "offest and limit must be positive integers"})
 		return
 	}
+
 	var messages []models.Message
 	db.DB.Offset(offset).Limit(limit).Find(&messages)
 	c.JSON(http.StatusOK, gin.H{"data": messages})

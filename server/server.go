@@ -4,6 +4,7 @@ import (
 	"log"
 	"parler/controller"
 	"parler/db"
+	"parler/middlewares"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -16,13 +17,16 @@ func main() {
 		log.Fatalf("Error loading .env file")
 	}
 
-	router := gin.Default()
 	db.ConnectDatabase()
+	router := gin.Default()
+	public := router.Group("/auth")
+	public.POST("/login", controller.Login)
+	public.POST("/signup", controller.CreateUser)
 
-	router.POST("/chat", controller.PostMessage)
-	router.GET("/chat", controller.GetMessages)
-	router.POST("/auth/signup", controller.CreateUser)
-	router.POST("/auth/login", controller.Login)
+	protected := router.Group("api")
+	protected.Use(middlewares.JwtAuthMiddleware())
+	protected.POST("/chat", controller.PostMessage)
+	protected.GET("/chat", controller.GetMessages)
 
 	router.Run("localhost:8080")
 }

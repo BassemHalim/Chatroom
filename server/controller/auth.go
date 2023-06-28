@@ -48,7 +48,7 @@ func Login(c *gin.Context) {
 		return
 	}
 	// passwords match generate token
-	token, err := token.GenerateToken(user.Uid)
+	token, err := token.GenerateToken(user.ID)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -90,12 +90,16 @@ func CreateUser(c *gin.Context) {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
-	user := models.User{Email: request.Email,
-		Username: request.Username, Password: string(hashedPasswordBytes), Uid: uuid.New()}
+	user := models.User{
+		Email:    request.Email,
+		Username: request.Username,
+		Password: string(hashedPasswordBytes),
+		ID:       uuid.New()}
+		
 	db.DB.Create(&user)
 
 	// generate jwt token
-	token, err := token.GenerateToken(user.Uid)
+	token, err := token.GenerateToken(user.ID)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
