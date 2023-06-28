@@ -27,6 +27,7 @@ func main() {
 	protected.Use(middlewares.JwtAuthMiddleware())
 	protected.POST("/chat", controller.PostMessage)
 	protected.GET("/chat", controller.GetMessages)
+	protected.POST("/chat/vote", controller.Vote)
 
 	router.Run("localhost:8080")
 }

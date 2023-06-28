@@ -114,3 +114,4 @@ func doPasswordsMatch(hashedPassword, currPassword string) bool {
 		[]byte(hashedPassword), []byte(currPassword))
 	return err == nil
 }
+

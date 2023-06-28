@@ -1,16 +1,17 @@
 package controller
 
 import (
+	"errors"
 	"net/http"
 	"parler/db"
 	"parler/models"
-	"parler/service"
 	"strconv"
 	"time"
 
 	token "parler/utils"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 const MaxMsgsPerRequest = 200
@@ -33,7 +34,7 @@ func PostMessage(c *gin.Context) {
 		return
 	}
 
-	user, err := service.GetUserByID(user_id)
+	user, err := getUserByID(user_id)
 	if err != nil {
 		c.Status(http.StatusInternalServerError)
 		return
@@ -63,4 +64,14 @@ func GetMessages(c *gin.Context) {
 	db.DB.Offset(offset).Limit(limit).Find(&messages)
 	c.JSON(http.StatusOK, gin.H{"data": messages})
 
+}
+
+func getUserByID(uid uuid.UUID) (models.User, error) {
+	var user models.User
+
+	if err := db.DB.First(&user, uid).Error; err != nil {
+		return user, errors.New("user not found")
+	}
+
+	return user, nil
 }
