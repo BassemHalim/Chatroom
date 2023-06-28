@@ -14,10 +14,10 @@ import (
 
 func GenerateToken(user_id uuid.UUID) (string, error) {
 
-	token_lifespan,err := strconv.Atoi(os.Getenv("TOKEN_HOUR_LIFESPAN"))
+	token_lifespan, err := strconv.Atoi(os.Getenv("TOKEN_HOUR_LIFESPAN"))
 
 	if err != nil {
-		return "",err
+		return "", err
 	}
 
 	claims := jwt.MapClaims{}
