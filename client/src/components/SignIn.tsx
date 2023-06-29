@@ -2,13 +2,15 @@ import React from "react";
 import ChatIcon from "../assets/chat_icon.svg";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "./AuthProvider";
 
 export default function SignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [emailValid, setEmailValid] = useState(true);
   const [passwordValid, setPasswordValid] = useState(true);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const authcontext = useAuth();
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     setEmail(e.target.value);
@@ -22,7 +24,7 @@ export default function SignIn() {
     setPasswordValid(true);
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const emailRegex =
       /^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/;
@@ -33,8 +35,10 @@ export default function SignIn() {
       setPasswordValid(false);
     } else {
       // Form submission logic when both email and password are valid
-      //@TODO handle login
-      navigate('/chat')
+      await authcontext.login(email, password);
+      if (authcontext.isAuthenticated) {
+        navigate("/chat");
+      }
     }
   };
   return (

@@ -53,7 +53,7 @@ func Login(c *gin.Context) {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"token": token})
+	c.JSON(http.StatusOK, gin.H{"token": token, "username": user.Username})
 
 }
 
@@ -95,7 +95,7 @@ func CreateUser(c *gin.Context) {
 		Username: request.Username,
 		Password: string(hashedPasswordBytes),
 		ID:       uuid.New()}
-		
+
 	db.DB.Create(&user)
 
 	// generate jwt token
@@ -104,8 +104,7 @@ func CreateUser(c *gin.Context) {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"token": token})
-
+	c.JSON(http.StatusOK, gin.H{"token": token, "username": user.Username})
 }
 
 // Check if two passwords match
@@ -114,4 +113,3 @@ func doPasswordsMatch(hashedPassword, currPassword string) bool {
 		[]byte(hashedPassword), []byte(currPassword))
 	return err == nil
 }
-

@@ -1,57 +1,97 @@
-// import { useState, createContext, useContext, useEffect } from "react";
-// import { useLocation, useNavigate } from "react-router-dom";
-// import {
-//   onAuthStateChanged,
-//   signInWithPopup,
-//   User as FirebaseUser,
-//   GoogleAuthProvider,
-// } from "firebase/auth";
+import React, { createContext, useState, useContext } from "react";
+import axios from "axios";
+interface AuthContextType {
+  isAuthenticated: boolean;
+  token: string | null;
+  username: string | null;
+  login: (username: string, password: string) => Promise<void>;
+  logout: () => void;
+}
 
-// export interface AuthType {
-//   currentUser: FirebaseUser | null;
-//   onLogout: () => void;
-//   onLogin: () => void;
-// }
+export const AuthContext = createContext<AuthContextType>({
+  isAuthenticated: false,
+  token: null,
+  username: "",
+  login: () => Promise.resolve(),
+  logout: () => {},
+});
 
-// const AuthContext = createContext<AuthType | null>(null);
+export const useAuth = () => useContext(AuthContext);
 
-// const AuthProvider = ({ children }: any) => {
-//   const [currentUser, setCurrentUser] = useState<FirebaseUser | null>(null);
-//   const [loading, setLoading] = useState<boolean>(true);
-//   const navigate = useNavigate();
-//   const location = useLocation();
+interface AuthProviderProps {
+  children: React.ReactNode;
+}
 
-//   useEffect(() => {
-//     const unsubscribe = onAuthStateChanged(auth, (user) => {
-//       setCurrentUser(user);
-//       setLoading(false);
-//     });
-//     return unsubscribe;
-//   }, []);
+const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [token, setToken] = useState<string | null>(
+    localStorage.getItem("token")
+  );
+  const [username, setUsername] = useState<string | null>(
+    localStorage.getItem("username")
+  );
 
-//   const login = async () => {
-//     const provider = new GoogleAuthProvider();
-//     const result = await signInWithPopup(auth, provider);
-//     const origin = location.state?.from?.pathname || "/dashboard";
-//     navigate(origin);
-//   };
-//   const logout = () => {
-//     return auth.signOut();
-//   };
+  if (token && !isAuthenticated) {
+    const { exp } = parseJwt(token);
+    if (Date.now() / 1000 < exp) {
+      console.log("token valid");
+      setIsAuthenticated(true);
+    } else {
+      setToken(null);
+    }
+  }
 
-//   const value: AuthType = {
-//     currentUser,
-//     onLogout: logout,
-//     onLogin: login,
-//   };
+  const login = async (username: string, password: string) => {
+    // Perform authentication logic
+    console.log(username, password);
+    try {
+      const response = await axios.post("http://localhost:8080/auth/login", {
+        email: username,
+        password: password,
+      });
+      if (response.status === 200) {
+        const { token, username } = response.data;
+        console.log(token);
+        setIsAuthenticated(true);
+        setToken(token);
+        setUsername(username);
 
-//   return (
-//     <AuthContext.Provider value={value}>
-//       {!loading && children}
-//     </AuthContext.Provider>
-//   );
-// };
-// export const useAuth = () => {
-//   return useContext(AuthContext);
-// };
-// export default AuthProvider;
+        localStorage.setItem("token", token);
+        localStorage.setItem("username", username); // TODO: create api instead of storing username
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const logout = () => {
+    setIsAuthenticated(false);
+    setToken(null);
+  };
+
+  return (
+    <AuthContext.Provider
+      value={{ isAuthenticated, token, username, login, logout }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
+};
+
+function parseJwt(token: string) {
+  var base64Url = token.split(".")[1];
+  var base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+  var jsonPayload = decodeURIComponent(
+    window
+      .atob(base64)
+      .split("")
+      .map(function (c) {
+        return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+      })
+      .join("")
+  );
+
+  return JSON.parse(jsonPayload);
+}
+
+export default AuthProvider;

@@ -14,7 +14,7 @@ import (
 	"github.com/google/uuid"
 )
 
-const MaxMsgsPerRequest = 200
+const MaxMsgsPerRequest = 500
 
 type PostMessageRequest struct {
 	Content string `json:"content" binding:"required"`
@@ -40,9 +40,8 @@ func PostMessage(c *gin.Context) {
 		return
 	}
 
-	AuthorID := user.ID
 	message := models.Message{Content: request.Content,
-		UserID:    AuthorID,
+		Username:  user.Username,
 		Votes:     0,
 		CreatedAt: time.Now()}
 
@@ -61,7 +60,7 @@ func GetMessages(c *gin.Context) {
 	}
 
 	var messages []models.Message
-	db.DB.Offset(offset).Limit(limit).Find(&messages)
+	db.DB.Offset(offset).Limit(limit).Order("ID").Find(&messages)
 	c.JSON(http.StatusOK, gin.H{"data": messages})
 
 }
