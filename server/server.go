@@ -19,6 +19,10 @@ func main() {
 
 	db.ConnectDatabase()
 	router := gin.Default()
+	// router.Use(middlewares.RequestLogger())
+
+
+	router.Use(middlewares.CORSMiddleware())
 	public := router.Group("/auth")
 	public.POST("/login", controller.Login)
 	public.POST("/signup", controller.CreateUser)
