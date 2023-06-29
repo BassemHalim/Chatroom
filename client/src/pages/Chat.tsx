@@ -3,8 +3,7 @@ import Message from "../components/Message";
 import sendIcon from "../assets/send_icon.svg";
 import { useAuth } from "../components/AuthProvider";
 import { MessageProps } from "../components/Message";
-import axios from "axios";
-import useWebSocket, { ReadyState } from "react-use-websocket";
+import useWebSocket from "react-use-websocket";
 
 const Chat = () => {
   const [formValue, setFromValue] = useState("");
@@ -12,8 +11,7 @@ const Chat = () => {
   const { token } = useAuth();
   const [initialized, setInitialized] = useState(false);
   const scollToRef = useRef<null | HTMLDivElement>(null);
-
-  const { sendMessage, lastMessage } = useWebSocket("ws://localhost:8080/ws");
+  const { lastMessage } = useWebSocket("ws://localhost:8080/ws");
 
   const postMessage = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,8 +32,8 @@ const Chat = () => {
         body: raw,
         redirect: "follow",
       };
-
-      fetch("http://localhost:8080/api/chat", requestOptions).catch((error) =>
+      const baseURL = import.meta.env.VITE_BACKEND_BASEURL;
+      fetch(baseURL + ":8080/api/chat", requestOptions).catch((error) =>
         console.log("error", error)
       );
       setFromValue("");
@@ -50,8 +48,8 @@ const Chat = () => {
       method: "GET",
       headers: header,
     };
-
-    fetch("http://localhost:8080/api/chat", requestOptions)
+    const baseURL = import.meta.env.VITE_BACKEND_BASEURL;
+    fetch(baseURL + ":8080/api/chat", requestOptions)
       .then((response) => {
         return response.json();
       })

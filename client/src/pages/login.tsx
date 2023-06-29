@@ -1,7 +1,7 @@
 import React from "react";
 import ChatIcon from "../assets/chat_icon.svg";
 import { useState } from "react";
-import { Link, redirect, useNavigate, Navigate } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { useAuth } from "../components/AuthProvider";
 
 export default function Login() {
@@ -9,7 +9,6 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [emailValid, setEmailValid] = useState(true);
   const [passwordValid, setPasswordValid] = useState(true);
-  const navigate = useNavigate();
   const authcontext = useAuth();
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>): void => {

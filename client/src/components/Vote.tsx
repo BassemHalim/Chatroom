@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import upvoteIcon from "../assets/upvote_icon.svg";
 import downVoteIcon from "../assets/downvote_icon.svg";
 import { useAuth } from "./AuthProvider";
@@ -25,9 +25,9 @@ export default function Vote(props: VotePops) {
       headers: header,
       body: body,
     };
-
-    fetch("http://localhost:8080/api/chat/vote", requestOptions).catch(
-      (error) => console.log(error)
+    const baseURL = import.meta.env.VITE_BACKEND_BASEURL;
+    fetch(baseURL + ":8080/api/chat/vote", requestOptions).catch((error) =>
+      console.log(error)
     );
   };
   const upvote = () => {
@@ -38,7 +38,7 @@ export default function Vote(props: VotePops) {
     setVote(vote - 1);
     postVote(-1);
   };
-  
+
   return (
     <div className="flex flex-row mx-1.5">
       <button onClick={downvote}>

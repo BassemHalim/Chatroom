@@ -45,7 +45,8 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const login = async (email: string, password: string) => {
     try {
-      const response = await axios.post("http://localhost:8080/auth/login", {
+      const baseURL = import.meta.env.VITE_BACKEND_BASEURL;
+      const response = await axios.post(baseURL + ":8080/auth/login", {
         email: email,
         password: password,
       });
@@ -57,9 +58,12 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
         localStorage.setItem("token", token);
         localStorage.setItem("username", username); // TODO: create api instead of storing username
+      } else {
+        alert("invalid credentials");
       }
     } catch (error) {
       console.log(error);
+      alert("invalid credentials");
     }
   };
 
@@ -72,7 +76,8 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const signup = async (username: string, email: string, password: string) => {
     try {
-      const response = await axios.post("http://localhost:8080/auth/signup", {
+      const baseURL = import.meta.env.VITE_BACKEND_BASEURL;
+      const response = await axios.post(baseURL + ":8080/auth/signup", {
         email: email,
         username: username,
         password: password,
@@ -82,7 +87,7 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setIsAuthenticated(true);
         setToken(token);
         setUsername(username);
-        console.log(AuthContext)
+        console.log(AuthContext);
         localStorage.setItem("token", token);
         localStorage.setItem("username", username);
       }
