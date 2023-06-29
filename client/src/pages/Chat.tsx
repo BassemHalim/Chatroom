@@ -6,11 +6,6 @@ import { MessageProps } from "../components/Message";
 import axios from "axios";
 import useWebSocket, { ReadyState } from "react-use-websocket";
 
-axios.interceptors.request.use((request) => {
-  console.log("Starting Request", JSON.stringify(request, null, 2));
-  return request;
-});
-
 const Chat = () => {
   const [formValue, setFromValue] = useState("");
   const [messages, setMessages] = useState<MessageProps[]>([]);
@@ -21,7 +16,6 @@ const Chat = () => {
   const { sendMessage, lastMessage } = useWebSocket("ws://localhost:8080/ws");
 
   const postMessage = async (e: React.FormEvent) => {
-    console.log("sending message");
     e.preventDefault();
     if (formValue) {
       //send to backend
@@ -82,8 +76,7 @@ const Chat = () => {
       setInitialized(true);
     }
     if (lastMessage !== null) {
-      console.log(lastMessage.data);
-      const newMessage: MessageProps = JSON.parse(lastMessage.data)
+      const newMessage: MessageProps = JSON.parse(lastMessage.data);
       setMessages(messages.concat(newMessage));
     }
   }, [setMessages, lastMessage]);

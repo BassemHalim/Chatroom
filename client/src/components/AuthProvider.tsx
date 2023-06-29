@@ -37,7 +37,6 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   if (token && !isAuthenticated) {
     const { exp } = parseJwt(token);
     if (Date.now() / 1000 < exp) {
-      console.log("token valid");
       setIsAuthenticated(true);
     } else {
       setToken(null);
@@ -52,7 +51,6 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       });
       if (response.status === 200) {
         const { token, username } = response.data;
-        console.log(token);
         setIsAuthenticated(true);
         setToken(token);
         setUsername(username);
@@ -68,38 +66,25 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const logout = () => {
     setIsAuthenticated(false);
     setToken(null);
+    localStorage.removeItem("token");
+    localStorage.removeItem("username");
   };
 
   const signup = async (username: string, email: string, password: string) => {
-    var headers = new Headers();
-    headers.append("Content-Type", "application/json");
-
-    var raw = JSON.stringify({
-      username: username,
-      email: email,
-      password: password,
-    });
-
-    var requestOptions: RequestInit = {
-      method: "POST",
-      headers: headers,
-      body: raw,
-    };
     try {
-      let response = await fetch(
-        "http://localhost:8080/auth/signup",
-        requestOptions
-      ).then((response) => response.json());
+      const response = await axios.post("http://localhost:8080/auth/signup", {
+        email: email,
+        username: username,
+        password: password,
+      });
       if (response.status === 200) {
-        console.log(response);
-        const { token, username } = response;
-        console.log(token);
+        const { token, username } = response.data;
         setIsAuthenticated(true);
         setToken(token);
         setUsername(username);
-
+        console.log(AuthContext)
         localStorage.setItem("token", token);
-        localStorage.setItem("username", username); // TODO: create api instead of storing username
+        localStorage.setItem("username", username);
       }
     } catch (error) {
       console.log(error);

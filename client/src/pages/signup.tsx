@@ -1,10 +1,10 @@
 import React from "react";
 import ChatIcon from "../assets/chat_icon.svg";
 import { useState } from "react";
-import { useAuth } from "./AuthProvider";
-import { useNavigate } from "react-router-dom";
+import { useAuth } from "../components/AuthProvider";
+import { Navigate, redirect, useNavigate } from "react-router-dom";
 
-export default function Register() {
+export default function Signup() {
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password1, setPassword1] = useState("");
@@ -50,13 +50,12 @@ export default function Register() {
       setPasswordValid(false);
     } else {
       // Form submission logic when both email and password are valid
-      await authcontext.signup(username, email, password1);
-      if (authcontext.isAuthenticated) {
-        navigate("/chat");
-      }
-      console.log(email, password1);
+      authcontext.signup(username, email, password1);
     }
   };
+  if (authcontext.isAuthenticated) {
+    return <Navigate to="/chat" />;
+  }
   return (
     <div className="flex place-content-center mt-10">
       <form onSubmit={handleSubmit}>
