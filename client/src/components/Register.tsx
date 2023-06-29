@@ -1,21 +1,30 @@
 import React from "react";
 import ChatIcon from "../assets/chat_icon.svg";
 import { useState } from "react";
+import { useAuth } from "./AuthProvider";
+import { useNavigate } from "react-router-dom";
 
 export default function Register() {
   const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password1, setPassword1] = useState("");
   const [password2, setPassword2] = useState("");
 
   const [emailValid, setEmailValid] = useState<boolean>(true);
   const [passwordValid, setPasswordValid] = useState<boolean>(true);
   const [mismatch, setMismatch] = useState<boolean>(false);
+  const authcontext = useAuth();
+  const navigate = useNavigate();
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
     setEmailValid(true);
   };
-
+  const handleUsernameChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ): void => {
+    setUsername(e.target.value);
+  };
   const handlePassword1Change = (
     e: React.ChangeEvent<HTMLInputElement>
   ): void => {
@@ -28,7 +37,7 @@ export default function Register() {
     setPassword2(e.target.value);
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const emailRegex =
       /^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/;
@@ -41,6 +50,10 @@ export default function Register() {
       setPasswordValid(false);
     } else {
       // Form submission logic when both email and password are valid
+      await authcontext.signup(username, email, password1);
+      if (authcontext.isAuthenticated) {
+        navigate("/chat");
+      }
       console.log(email, password1);
     }
   };
@@ -49,6 +62,19 @@ export default function Register() {
       <form onSubmit={handleSubmit}>
         <div className="place-content-center bg-slate-300 flex flex-col rounded-3xl items-center w-80 p-2">
           <img src={ChatIcon} className="w-40 " />
+          <label
+            className="block text-gray-700 text-sm font-bold m-2 self-start"
+            htmlFor="username"
+          >
+            Username
+          </label>
+          <input
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            type="username"
+            placeholder="Enter a Username"
+            value={username}
+            onChange={handleUsernameChange}
+          />
           <label
             className="block text-gray-700 text-sm font-bold m-2 self-start"
             htmlFor="email"

@@ -1,10 +1,12 @@
 import React, { createContext, useState, useContext } from "react";
 import axios from "axios";
+
 interface AuthContextType {
   isAuthenticated: boolean;
   token: string | null;
   username: string | null;
-  login: (username: string, password: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<void>;
+  signup: (username: string, email: string, password: string) => Promise<void>;
   logout: () => void;
 }
 
@@ -13,6 +15,7 @@ export const AuthContext = createContext<AuthContextType>({
   token: null,
   username: "",
   login: () => Promise.resolve(),
+  signup: () => Promise.resolve(),
   logout: () => {},
 });
 
@@ -41,12 +44,10 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   }
 
-  const login = async (username: string, password: string) => {
-    // Perform authentication logic
-    console.log(username, password);
+  const login = async (email: string, password: string) => {
     try {
       const response = await axios.post("http://localhost:8080/auth/login", {
-        email: username,
+        email: email,
         password: password,
       });
       if (response.status === 200) {
@@ -69,9 +70,45 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setToken(null);
   };
 
+  const signup = async (username: string, email: string, password: string) => {
+    var headers = new Headers();
+    headers.append("Content-Type", "application/json");
+
+    var raw = JSON.stringify({
+      username: username,
+      email: email,
+      password: password,
+    });
+
+    var requestOptions: RequestInit = {
+      method: "POST",
+      headers: headers,
+      body: raw,
+    };
+    try {
+      let response = await fetch(
+        "http://localhost:8080/auth/signup",
+        requestOptions
+      ).then((response) => response.json());
+      if (response.status === 200) {
+        console.log(response);
+        const { token, username } = response;
+        console.log(token);
+        setIsAuthenticated(true);
+        setToken(token);
+        setUsername(username);
+
+        localStorage.setItem("token", token);
+        localStorage.setItem("username", username); // TODO: create api instead of storing username
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <AuthContext.Provider
-      value={{ isAuthenticated, token, username, login, logout }}
+      value={{ isAuthenticated, token, username, login, signup, logout }}
     >
       {children}
     </AuthContext.Provider>
