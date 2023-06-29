@@ -1,4 +1,4 @@
-package db
+package config
 
 import (
 	"fmt"
@@ -11,7 +11,7 @@ import (
 
 var DB *gorm.DB
 
-func ConnectDatabase() {
+func ConnectDatabase() error {
 	host := os.Getenv("DB_HOST")
 	username := os.Getenv("DB_USER")
 	password := os.Getenv("DB_PASSWORD")
@@ -21,11 +21,16 @@ func ConnectDatabase() {
 	database, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 
 	if err != nil {
-		panic("Failed to connect to database!")
+		return err
 	}
-
-	database.AutoMigrate(&models.User{})    // register User model
+	err = database.AutoMigrate(&models.User{}) // register User model
+	if err != nil {
+		return err
+	}
 	database.AutoMigrate(&models.Message{}) // register Message model
-
+	if err != nil {
+		return err
+	}
 	DB = database
+	return nil
 }

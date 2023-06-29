@@ -3,7 +3,7 @@ package controller
 import (
 	"errors"
 	"net/http"
-	"parler/db"
+	"parler/config"
 	"parler/models"
 
 	"github.com/gin-gonic/gin"
@@ -33,7 +33,6 @@ func Vote(c *gin.Context) {
 	err := UpdateVote(request.MessageID, voteType)
 	if err != nil {
 		// TODO: handle different types of errors
-
 		c.AbortWithStatusJSON(http.StatusInternalServerError, err)
 		return
 	}
@@ -45,10 +44,10 @@ func UpdateVote(id uint, typ int) error {
 		return errors.New("typ must be -1 or 1")
 	}
 	message := models.Message{}
-	res := db.DB.Clauses(clause.Locking{Strength: "UPDATE"}).First(&message, id)
+	res := config.DB.Clauses(clause.Locking{Strength: "UPDATE"}).First(&message, id)
 	if res.Error != nil {
 		return res.Error
 	}
 	message.Votes += typ
-	return db.DB.Save(message).Error
+	return config.DB.Save(message).Error
 }

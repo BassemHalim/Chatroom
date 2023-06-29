@@ -6,7 +6,7 @@ import Register from "./components/Register";
 import Header from "./components/Header";
 import AuthProvider from "./components/AuthProvider";
 import ProtectedRoute from "./components/ProtectedRoute";
-import NotFound from "./components/NotFound";
+import NotFound from "./pages/NotFound";
 function Root() {
   return (
     <AuthProvider>

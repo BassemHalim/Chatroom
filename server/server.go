@@ -2,8 +2,8 @@ package main
 
 import (
 	"log"
+	"parler/config"
 	"parler/controller"
-	"parler/db"
 	"parler/middlewares"
 
 	"github.com/gin-gonic/gin"
@@ -12,17 +12,20 @@ import (
 
 func main() {
 	err := godotenv.Load(".env")
-
 	if err != nil {
 		log.Fatalf("Error loading .env file")
+		return
 	}
 
-	db.ConnectDatabase()
+	err = config.ConnectDatabase()
+	if err != nil {
+		log.Fatalf("Failed to connect to DB")
+		return
+	}
+
 	router := gin.Default()
-	// router.Use(middlewares.RequestLogger())
-
-
 	router.Use(middlewares.CORSMiddleware())
+
 	public := router.Group("/auth")
 	public.POST("/login", controller.Login)
 	public.POST("/signup", controller.CreateUser)
@@ -32,6 +35,11 @@ func main() {
 	protected.POST("/chat", controller.PostMessage)
 	protected.GET("/chat", controller.GetMessages)
 	protected.POST("/chat/vote", controller.Vote)
+
+	channel := config.CreateSocket()
+	router.GET("/ws", func(c *gin.Context) {
+		channel.HandleRequest(c.Writer, c.Request)
+	})
 
 	router.Run("localhost:8080")
 }

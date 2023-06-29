@@ -3,7 +3,7 @@ package controller
 import (
 	"net/http"
 	"net/mail"
-	"parler/db"
+	db "parler/config"
 	"parler/models"
 	token "parler/utils"
 

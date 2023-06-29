@@ -1,9 +1,10 @@
 package controller
 
 import (
+	"encoding/json"
 	"errors"
 	"net/http"
-	"parler/db"
+	"parler/config"
 	"parler/models"
 	"strconv"
 	"time"
@@ -39,13 +40,17 @@ func PostMessage(c *gin.Context) {
 		c.Status(http.StatusInternalServerError)
 		return
 	}
-
 	message := models.Message{Content: request.Content,
 		Username:  user.Username,
 		Votes:     0,
 		CreatedAt: time.Now()}
+	config.DB.Create(&message)
+	// broadcast to all clients
+	msgJson, err := json.Marshal(message)
+	if err == nil {
+		config.Socket.Broadcast(msgJson)
+	}
 
-	db.DB.Create(&message)
 	c.JSON(http.StatusOK, gin.H{"message": message})
 
 }
@@ -60,7 +65,7 @@ func GetMessages(c *gin.Context) {
 	}
 
 	var messages []models.Message
-	db.DB.Offset(offset).Limit(limit).Order("ID").Find(&messages)
+	config.DB.Offset(offset).Limit(limit).Order("ID").Find(&messages)
 	c.JSON(http.StatusOK, gin.H{"data": messages})
 
 }
@@ -68,7 +73,7 @@ func GetMessages(c *gin.Context) {
 func getUserByID(uid uuid.UUID) (models.User, error) {
 	var user models.User
 
-	if err := db.DB.First(&user, uid).Error; err != nil {
+	if err := config.DB.First(&user, uid).Error; err != nil {
 		return user, errors.New("user not found")
 	}
 

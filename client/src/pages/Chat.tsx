@@ -4,6 +4,7 @@ import sendIcon from "../assets/send_icon.svg";
 import { useAuth } from "../components/AuthProvider";
 import { MessageProps } from "../components/Message";
 import axios from "axios";
+import useWebSocket, { ReadyState } from "react-use-websocket";
 
 axios.interceptors.request.use((request) => {
   console.log("Starting Request", JSON.stringify(request, null, 2));
@@ -17,19 +18,14 @@ const Chat = () => {
   const [initialized, setInitialized] = useState(false);
   const scollToRef = useRef<null | HTMLDivElement>(null);
 
-  const sendMessage = async (e: React.FormEvent) => {
+  const { sendMessage, lastMessage } = useWebSocket("ws://localhost:8080/ws");
+
+  const postMessage = async (e: React.FormEvent) => {
+    console.log("sending message");
     e.preventDefault();
     if (formValue) {
-      // const newMsg: MessageProps = {
-      //   content: formValue,
-      //   type: "sent",
-      //   id: msgNum,
-      //   votes: 0,
-      // };
-      // const newMessages = [...messages, newMsg];
-      // setMessages(newMessages);
-      // setMsgNum(msgNum + 1);
       //send to backend
+
       var headers = new Headers();
       headers.append("Authorization", "Bearer " + token);
       headers.append("Content-Type", "application/json");
@@ -85,7 +81,12 @@ const Chat = () => {
       getMessages();
       setInitialized(true);
     }
-  }, [messages]);
+    if (lastMessage !== null) {
+      console.log(lastMessage.data);
+      const newMessage: MessageProps = JSON.parse(lastMessage.data)
+      setMessages(messages.concat(newMessage));
+    }
+  }, [setMessages, lastMessage]);
 
   return (
     <div className="flex flex-col flex-grow justify-between">
@@ -94,7 +95,7 @@ const Chat = () => {
           messages.map((msg, index) => <Message {...msg} key={index} />)}
       </div>
       <form
-        onSubmit={sendMessage}
+        onSubmit={postMessage}
         className="flex flex-row place-content-center mb-4"
       >
         <div className="flex flex-row rounded-3xl bg-gray-600 p-3">
