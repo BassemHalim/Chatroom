@@ -25,8 +25,7 @@ export default function Vote(props: VotePops) {
       headers: header,
       body: body,
     };
-    const baseURL = import.meta.env.VITE_BACKEND_BASEURL;
-    fetch(baseURL + ":8080/api/chat/vote", requestOptions).catch((error) =>
+    fetch("/api/v1/chat/vote", requestOptions).catch((error) =>
       console.log(error)
     );
   };

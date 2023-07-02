@@ -45,8 +45,7 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const login = async (email: string, password: string) => {
     try {
-      const baseURL = import.meta.env.VITE_BACKEND_BASEURL;
-      const response = await axios.post(baseURL + ":8080/auth/login", {
+      const response = await axios.post( "/api/v1/auth/login", {
         email: email,
         password: password,
       });
@@ -76,8 +75,7 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const signup = async (username: string, email: string, password: string) => {
     try {
-      const baseURL = import.meta.env.VITE_BACKEND_BASEURL;
-      const response = await axios.post(baseURL + ":8080/auth/signup", {
+      const response = await axios.post("/api/v1/auth/signup", {
         email: email,
         username: username,
         password: password,

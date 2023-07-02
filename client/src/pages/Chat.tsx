@@ -11,7 +11,7 @@ const Chat = () => {
   const { token } = useAuth();
   const [initialized, setInitialized] = useState(false);
   const scollToRef = useRef<null | HTMLDivElement>(null);
-  const { lastMessage } = useWebSocket("ws://localhost:8080/ws");
+  const { lastMessage } = useWebSocket("ws://"+ window.location.host + "/api/v1/ws", {protocols: token? token : ""});
 
   const postMessage = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,8 +32,7 @@ const Chat = () => {
         body: raw,
         redirect: "follow",
       };
-      const baseURL = import.meta.env.VITE_BACKEND_BASEURL;
-      fetch(baseURL + ":8080/api/chat", requestOptions).catch((error) =>
+      fetch("/api/v1/chat", requestOptions).catch((error) =>
         console.log("error", error)
       );
       setFromValue("");
@@ -48,8 +47,7 @@ const Chat = () => {
       method: "GET",
       headers: header,
     };
-    const baseURL = import.meta.env.VITE_BACKEND_BASEURL;
-    fetch(baseURL + ":8080/api/chat", requestOptions)
+    fetch("/api/v1/chat", requestOptions)
       .then((response) => {
         return response.json();
       })
