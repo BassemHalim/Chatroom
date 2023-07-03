@@ -42,5 +42,5 @@ func main() {
 		channel.HandleRequest(c.Writer, c.Request)
 	})
 
-	router.Run(":8080")
+	router.Run()
 }

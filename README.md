@@ -18,8 +18,7 @@ docker build . -t dockerized-react
 
 # Run the image in detached mode 
 # and map port 5173 inside the container with 5173 on current host
-docker run -p 5173:5173 -d dockerized-react \
--e VITE_BACKEND_BASEURL=<<YOUR BACKEND SERVER URL>>
+docker run -p 5173:5173 -d dockerized-react
 ```
 
 ## Backend:
@@ -28,23 +27,23 @@ create a .env file with the following variables and place it in /server
 #.env
 TOKEN_HOUR_LIFESPAN=4
 JWT_SECRET=256-bit random secret key
-DB_HOST=
-DB_USER=
-DB_PASSWORD=
-DB_NAME=
-DB_PORT=
-FE_URL=<YOUR-DOMAIN>:5173 
+# DATABASE_HOST=localhost uncomment to run locally
+DATABASE_HOST=db
+POSTGRES_USER=
+POSTGRES_PASSWORD=
+POSTGRES_NAME=
 ```
 
 ```bash
 ## from root directory
 cd server
-docker build . -t chat-server
 ```
-To run manually use
+to run manually user docker compose
 ```
-docker run --env-file=.env -p 8080:8080 chat-server
+sudo docker compose up -d
 ```
+
+
 or using __minikube__ :
 - create a env-secrets.yaml file with the following content
 ```yaml

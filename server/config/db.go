@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"parler/models"
 
@@ -12,12 +13,13 @@ import (
 var DB *gorm.DB
 
 func ConnectDatabase() error {
-	host := os.Getenv("DB_HOST")
-	username := os.Getenv("DB_USER")
-	password := os.Getenv("DB_PASSWORD")
-	databaseName := os.Getenv("DB_NAME")
-	port := os.Getenv("DB_PORT")
-	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=America/Los_Angeles", host, username, password, databaseName, port)
+	host := os.Getenv("DATABASE_HOST")
+	username := os.Getenv("POSTGRES_USER")
+	password := os.Getenv("POSTGRES_PASSWORD")
+	databaseName := os.Getenv("POSTGRES_NAME")
+	// dsn := fmt.Sprintf("postgres://%s:%s@localhost:5432/%s?sslmode=disable", username, password, databaseName)
+	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=5432 sslmode=disable TimeZone=America/Los_Angeles", host, username, password, databaseName)
+	log.Print(dsn)
 	database, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 
 	if err != nil {
