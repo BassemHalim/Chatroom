@@ -1,0 +1,10 @@
+version: "3.8"
+services:
+  frontend:
+    container_name: react_nginx
+    build:
+      context: .
+      dockerfile: site+nginx.Dockerfile
+    ports:
+      - "5173:5173"
+    network_mode: "host"

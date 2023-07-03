@@ -25,6 +25,7 @@ docker run -p 5173:5173 -d dockerized-react
 create a .env file with the following variables and place it in /server
 ```
 #.env
+GIN_MODE=release
 TOKEN_HOUR_LIFESPAN=4
 JWT_SECRET=256-bit random secret key
 # DATABASE_HOST=localhost uncomment to run locally

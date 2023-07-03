@@ -1,7 +1,7 @@
 package middlewares
 
 import (
-	"fmt"
+	"log"
 	"net/http"
 
 	"parler/utils"
@@ -29,7 +29,7 @@ func JwtAuthMiddleware() gin.HandlerFunc {
 
 func RequestLogger() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		fmt.Println(c.Request)
+		log.Println(c.Request)
 		c.Next()
 	}
 }
