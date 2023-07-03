@@ -14,11 +14,9 @@ currently Votes are not updated in real time, users need to reload the page
 ```bash
 ## from root directory
 cd client
-docker build . -t dockerized-react
 
 # Run the image in detached mode 
-# and map port 5173 inside the container with 5173 on current host
-docker run -p 5173:5173 -d dockerized-react
+sudo docker compose up -d
 ```
 
 ## Backend:
