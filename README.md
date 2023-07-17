@@ -1,5 +1,6 @@
 
 # Parler
+![demo](chatroom-demo.gif)
 A chatroom app where all app users are in a single chat room!
 
 Users can upvote or downvote messages
